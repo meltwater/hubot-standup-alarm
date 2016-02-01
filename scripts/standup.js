@@ -113,10 +113,10 @@ module.exports = function(robot) {
 
     // Finds the room for most adaptors
     function findRoom(msg) {
-        var room = msg.envelope.room;
+        var room = msg.envelope.user.reply_to;
 
         if(_.isUndefined(room)) {
-            room = msg.envelope.user.reply_to;
+            room = msg.envelope.room;
         }
 
         return room;
