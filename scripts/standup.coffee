@@ -73,7 +73,8 @@ module.exports = (robot) ->
 
   # Fires the standup message.
   doStandup = (room) ->
-    standups = getStandupsForRoom(room)
+    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + room + '@conf.hipchat.com'
+    standups = getStandupsForRoom(room) + getStandupsForRoom(roomWithJID)
     if standups.length > 0
       # Do some magic here to loop through the standups and find the one for right now
       theStandup = standups.filter(standupShouldFire)
@@ -121,8 +122,10 @@ module.exports = (robot) ->
 
   # Remove all standups for a room
   clearAllStandupsForRoom = (room, msg) ->
+    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + room + '@conf.hipchat.com'
     standups = getStandups()
     standupsToKeep = _.reject(standups, room: room)
+    standupsToKeep = _.reject(standupsToKeep, room: roomWithJID)
     updateBrain standupsToKeep
     standupsCleared = standups.length - (standupsToKeep.length)
     msg.send 'Deleted ' + standupsCleared + ' standups for ' + room
@@ -134,9 +137,13 @@ module.exports = (robot) ->
       msg.send "Sorry, but I couldn't spot a time in your command."
       return
 
+    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + room + '@conf.hipchat.com'
     standups = getStandups()
     standupsToKeep = _.reject(standups,
       room: room
+      time: time)
+    standupsToKeep = _.reject(standupsToKeep,
+      room: roomWithJID
       time: time)
     updateBrain standupsToKeep
     standupsCleared = standups.length - (standupsToKeep.length)
@@ -165,7 +172,8 @@ module.exports = (robot) ->
 
   # List the standups within a specific room
   listStandupsForRoom = (room, msg) ->
-    standups = getStandupsForRoom(findRoom(msg))
+    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + findRoom(msg) + '@conf.hipchat.com'
+    standups = getStandupsForRoom(findRoom(msg)) + getStandupsForRoom(roomWithJID)
     if standups.length == 0
       msg.send 'Well this is awkward. You haven\'t got any standups set :-/'
     else
