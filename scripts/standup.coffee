@@ -7,6 +7,7 @@
 #
 # Configuration:
 #  HUBOT_STANDUP_PREPEND
+#  ORG_HIPCHAT_ID (e.g. 1213134)
 #
 # Commands:
 #   hubot standup help - See a help document explaining how to use.
@@ -26,6 +27,7 @@
 
 ###jslint node: true###
 
+Util = require "util"
 cronJob = require('cron').CronJob
 _ = require('underscore')
 
@@ -172,8 +174,8 @@ module.exports = (robot) ->
 
   # List the standups within a specific room
   listStandupsForRoom = (room, msg) ->
-    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + findRoom(msg) + '@conf.hipchat.com'
-    standups = getStandupsForRoom(findRoom(msg)) + getStandupsForRoom(roomWithJID)
+    roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + room + '@conf.hipchat.com'
+    standups = getStandupsForRoom(room).concat getStandupsForRoom(roomWithJID)
     if standups.length == 0
       msg.send 'Well this is awkward. You haven\'t got any standups set :-/'
     else
