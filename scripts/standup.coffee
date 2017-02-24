@@ -76,7 +76,7 @@ module.exports = (robot) ->
   # Fires the standup message.
   doStandup = (room) ->
     roomWithJID = (process.env.ORG_HIPCHAT_ID or '') + '_' + room + '@conf.hipchat.com'
-    standups = getStandupsForRoom(room) + getStandupsForRoom(roomWithJID)
+    standups = getStandupsForRoom(room).concat getStandupsForRoom(roomWithJID)
     if standups.length > 0
       # Do some magic here to loop through the standups and find the one for right now
       theStandup = standups.filter(standupShouldFire)
